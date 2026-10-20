@@ -1,0 +1,59 @@
+gambar = imread('Positif_2.jpg');
+
+cform = makecform ("srgb2lab");
+lab = applycform(gambar, cform);
+ab = double(lab(:,:,2:3));
+nrows = size (ab,1);
+ncols = size(ab,2);
+ab = reshape(ab,nrows*ncols,2);
+nColors = 2;
+[cluster_idx,cluster_center] = kmeans(ab,nColors,"distance","sqEuclidean","Replicates",2);
+pixel_labels=reshape(cluster_idx,nrows,ncols);
+RGB = label2rgb(pixel_labels);
+
+% Lakukan segmentasi menggunakan k-means
+[idx, centers] = kmeans(image, k);
+
+% Konversi matriks indeks menjadi matriks label yang sesuai dengan ukuran gambar
+labels = reshape(idx, size(image));
+
+% Hitung kotak pembatas untuk setiap cluster
+props = regionprops(labels, 'BoundingBox');
+
+% Loop melalui setiap kotak pembatas dan gambari pada gambar
+figure;
+imshow(image);
+hold on;
+
+for i = 1:numel(props)
+    rectangle('Position', props(i).BoundingBox, 'EdgeColor', 'r', 'LineWidth', 2);
+end
+
+hold off;
+
+
+% Mengubah citra menjadi vektor fitur
+[rows, cols, ~] = size(gambar);
+features = reshape(gambar, rows * cols, 3);
+
+% Melakukan segmentasi menggunakan K-means
+[idx, ~] = kmeans(double(features), nColors);
+
+% Mengubah indeks kluster menjadi citra segmen
+segmentedImg = reshape(idx, rows, cols);
+
+
+% subplot(1,3,1);imshow(gambar);title("Citra Asli");
+% subplot(1,3,2);imshow(lab);title("Citra Channel Hijau");
+% subplot(1,3,3);title("Citra Hasil Segmentasi");
+
+% Melakukan thresholding pada citra segmen
+binaryImg = segmentedImg == 1; % Ubah angka kluster sesuai kebutuhan
+
+% Menampilkan citra biner
+imshow(binaryImg, []);
+
+c = imshow(RGB,[]);
+
+% d = rgb2gray(c);
+% imshow(d)

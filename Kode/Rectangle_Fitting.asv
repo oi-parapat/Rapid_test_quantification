@@ -1,0 +1,18 @@
+% Membaca citra biner
+citra_biner = imread('potong_biner_positif1.png');
+
+% Mengidentifikasi properti objek dalam citra biner
+properti_objek = regionprops(citra_biner, 'BoundingBox');
+
+jumlah_kotak = numel(properti_objek);
+
+% Menampilkan citra biner
+figure;
+imshow(citra_biner);
+hold on;
+
+% Menggambar rectangle pada setiap objek dalam citra
+for i = 1:numel(properti_objek)
+    bounding_box = properti_objek(i).BoundingBox;
+    rectangle('Position', bounding_box, 'EdgeColor', 'r', 'LineWidth', 2);
+end
